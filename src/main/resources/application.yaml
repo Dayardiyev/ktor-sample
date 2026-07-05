@@ -1,0 +1,16 @@
+ktor:
+  deployment:
+    port: 8080
+  application:
+    modules:
+      - com.example.SerializationKt.configureSerialization
+      - com.example.StatusPagesKt.configureStatusPages
+      - com.example.db.DatabaseFactoryKt.configureDatabases
+      - com.example.RoutingKt.configureRouting
+
+# Настройки подключения к PostgreSQL (читаются в DatabaseFactory).
+# R2DBC — реактивный (неблокирующий) драйвер, поэтому URL начинается с r2dbc:, а не jdbc:
+postgres:
+  url: "r2dbc:postgresql://localhost:5432/ktor_catalog"
+  user: "alish"
+  password: ""

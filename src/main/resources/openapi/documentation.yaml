@@ -1,0 +1,362 @@
+openapi: "3.0.3"
+info:
+  title: "Ktor Catalog API"
+  description: "REST API каталога товаров на Ktor + Exposed (R2DBC) + PostgreSQL. Модель — строгий EAV."
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8080"
+    description: "Локальный сервер"
+
+tags:
+  - name: Categories
+    description: "Категории товаров"
+  - name: CategoryAttributes
+    description: "Атрибуты, определённые для категории (напр. «Цвет», «Размер»)"
+  - name: Products
+    description: "Товары"
+  - name: ProductAttributes
+    description: "Значения атрибутов конкретных товаров"
+
+paths:
+  /categories:
+    get:
+      tags: [Categories]
+      summary: "Список категорий"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Category" }
+    post:
+      tags: [Categories]
+      summary: "Создать категорию"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CategoryInput" }
+      responses:
+        "201":
+          description: "Создано"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Category" }
+  /categories/{id}:
+    get:
+      tags: [Categories]
+      summary: "Категория по id"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Category" }
+        "404": { description: "Не найдено" }
+    put:
+      tags: [Categories]
+      summary: "Обновить категорию"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CategoryInput" }
+      responses:
+        "200":
+          description: "Обновлено"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Category" }
+        "404": { description: "Не найдено" }
+    delete:
+      tags: [Categories]
+      summary: "Удалить категорию"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "204": { description: "Удалено" }
+        "404": { description: "Не найдено" }
+
+  /category-attributes:
+    get:
+      tags: [CategoryAttributes]
+      summary: "Список атрибутов категорий"
+      parameters:
+        - name: categoryId
+          in: query
+          required: false
+          schema: { type: integer }
+          description: "Фильтр по категории"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CategoryAttribute" }
+    post:
+      tags: [CategoryAttributes]
+      summary: "Создать атрибут категории"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CategoryAttributeInput" }
+      responses:
+        "201":
+          description: "Создано"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CategoryAttribute" }
+  /category-attributes/{id}:
+    get:
+      tags: [CategoryAttributes]
+      summary: "Атрибут категории по id"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CategoryAttribute" }
+        "404": { description: "Не найдено" }
+    put:
+      tags: [CategoryAttributes]
+      summary: "Обновить атрибут категории"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CategoryAttributeInput" }
+      responses:
+        "200":
+          description: "Обновлено"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CategoryAttribute" }
+        "404": { description: "Не найдено" }
+    delete:
+      tags: [CategoryAttributes]
+      summary: "Удалить атрибут категории"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "204": { description: "Удалено" }
+        "404": { description: "Не найдено" }
+
+  /products:
+    get:
+      tags: [Products]
+      summary: "Список товаров"
+      parameters:
+        - name: categoryId
+          in: query
+          required: false
+          schema: { type: integer }
+          description: "Фильтр по категории"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Product" }
+    post:
+      tags: [Products]
+      summary: "Создать товар"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductInput" }
+      responses:
+        "201":
+          description: "Создано"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+  /products/{id}:
+    get:
+      tags: [Products]
+      summary: "Товар по id"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "404": { description: "Не найдено" }
+    put:
+      tags: [Products]
+      summary: "Обновить товар"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductInput" }
+      responses:
+        "200":
+          description: "Обновлено"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "404": { description: "Не найдено" }
+    delete:
+      tags: [Products]
+      summary: "Удалить товар"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "204": { description: "Удалено" }
+        "404": { description: "Не найдено" }
+
+  /product-attributes:
+    get:
+      tags: [ProductAttributes]
+      summary: "Список значений атрибутов товаров"
+      parameters:
+        - name: productId
+          in: query
+          required: false
+          schema: { type: integer }
+          description: "Фильтр по товару"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ProductAttribute" }
+    post:
+      tags: [ProductAttributes]
+      summary: "Создать значение атрибута товара"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductAttributeInput" }
+      responses:
+        "201":
+          description: "Создано"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProductAttribute" }
+  /product-attributes/{id}:
+    get:
+      tags: [ProductAttributes]
+      summary: "Значение атрибута товара по id"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProductAttribute" }
+        "404": { description: "Не найдено" }
+    put:
+      tags: [ProductAttributes]
+      summary: "Обновить значение атрибута товара"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductAttributeInput" }
+      responses:
+        "200":
+          description: "Обновлено"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProductAttribute" }
+        "404": { description: "Не найдено" }
+    delete:
+      tags: [ProductAttributes]
+      summary: "Удалить значение атрибута товара"
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "204": { description: "Удалено" }
+        "404": { description: "Не найдено" }
+
+components:
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer }
+  schemas:
+    Category:
+      type: object
+      properties:
+        id: { type: integer, example: 1 }
+        name: { type: string, example: "Ноутбуки" }
+        description: { type: string, nullable: true, example: "Портативные компьютеры" }
+    CategoryInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, example: "Смартфоны" }
+        description: { type: string, nullable: true, example: "Мобильные телефоны" }
+    CategoryAttribute:
+      type: object
+      properties:
+        id: { type: integer, example: 1 }
+        categoryId: { type: integer, example: 1 }
+        name: { type: string, example: "Цвет" }
+        dataType: { type: string, example: "STRING" }
+    CategoryAttributeInput:
+      type: object
+      required: [categoryId, name, dataType]
+      properties:
+        categoryId: { type: integer, example: 1 }
+        name: { type: string, example: "Диагональ экрана" }
+        dataType: { type: string, example: "NUMBER" }
+    Product:
+      type: object
+      properties:
+        id: { type: integer, example: 1 }
+        categoryId: { type: integer, example: 1 }
+        name: { type: string, example: "MacBook Air 13" }
+        description: { type: string, nullable: true }
+        price: { type: number, format: double, example: 1299.00 }
+    ProductInput:
+      type: object
+      required: [categoryId, name, price]
+      properties:
+        categoryId: { type: integer, example: 1 }
+        name: { type: string, example: "Dell XPS 13" }
+        description: { type: string, nullable: true, example: "Ультрабук" }
+        price: { type: number, format: double, example: 999.99 }
+    ProductAttribute:
+      type: object
+      properties:
+        id: { type: integer, example: 1 }
+        productId: { type: integer, example: 1 }
+        categoryAttributeId: { type: integer, example: 1 }
+        value: { type: string, example: "16" }
+    ProductAttributeInput:
+      type: object
+      required: [productId, categoryAttributeId, value]
+      properties:
+        productId: { type: integer, example: 1 }
+        categoryAttributeId: { type: integer, example: 1 }
+        value: { type: string, example: "16" }
